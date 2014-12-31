@@ -64,6 +64,8 @@ spi_master_config_t   epd_spi_config = {
     false                           /* Don't disable all IRQs. */
 };
 
+static bool spi_on = false;
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
@@ -102,6 +104,8 @@ static void set_spi_mode(spi_mode_t mode)
 bool EPD_SPI_init(void)
 {
     uint32_t err_code;
+    
+    spi_on = false;
 
     err_code = spi_init(EPD_SPI_CONTROLLER, &epd_spi_config);
     APP_ERROR_CHECK(err_code);
@@ -115,6 +119,8 @@ bool EPD_SPI_init(void)
 bool EPD_SPI_close(void)
 {
     spi_close(EPD_SPI_CONTROLLER);
+    
+    spi_on = false;
 
     return true;
 }
@@ -124,9 +130,11 @@ bool EPD_SPI_close(void)
 /*---------------------------------------------------------------------------*/
 void EPD_SPI_on(void) 
 {
-    const uint8_t buffer[1] = {0};
+    if (spi_on == true)
+        return;
+    spi_on = true;
 
-    EPD_SPI_close();
+    const uint8_t buffer[1] = {0};
 
 #if EPD_COG_VERSION == 1
     set_spi_mode(SPI_MODE_2);
@@ -146,7 +154,9 @@ void EPD_SPI_off(void)
 {
     const uint8_t buffer[1] = {0};
 
-    EPD_SPI_close();
+    if (spi_on == false)
+        return;
+    spi_on = false;
 
     set_spi_mode(SPI_MODE_0);
 

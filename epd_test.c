@@ -5,11 +5,14 @@
 #include "epd_v1.h"
 
 
-// 1.44" test images
+#if 1
 #include "cat_1_44.xbm"
+#include "venus_1_44.xbm"
 static const uint8_t * images_1_44 [] = {
-    cat_1_44_bits
+    cat_1_44_bits,
+    venus_1_44_bits,
 };
+#endif
 
 #if 0
 #include "cat_1_44.xbm"
