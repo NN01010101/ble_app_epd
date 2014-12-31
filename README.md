@@ -19,6 +19,7 @@ right (right hand column is all the even pins).  There is also small 1
 and 2 on the PCB silk screen above the socket and a 19 and 20 below
 the socket.
 
+```
 Pin Number   Description       Color    PCA10001 
 ----------   ---------------   ------   --------- 
 1.           Vcc 3V            Red      3.3V
@@ -41,7 +42,7 @@ Pin Number   Description       Color    PCA10001
 18.          FLASH\_CS         Orange   p6.30
 19.          /EPD\_CS          Brown    p5.23
 20.          GND               Black    GND         
-
+```
 ### Notes
 
 * The above values in parentheses like *(SW2)*, are not connected
