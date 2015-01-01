@@ -636,6 +636,7 @@ int main(void)
 
         if (user_button_pressed) {
             user_button_pressed = false;
+            uart_putstring((const uint8_t *)"epd_test\r\n");
             epd_test();
         }
 

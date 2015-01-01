@@ -29,6 +29,8 @@
 #include "epd_v1.h"
 #include "epd_spi.h"
 
+#include "font_7x8.h"
+
 
 // delays - more consistent naming
 #define Delay_ms(ms)   nrf_delay_ms(ms)
