@@ -28,19 +28,19 @@ Pin Number   Description       Color    PCA10001
 4.           *(UART_TX)*       Purple   -
 5.           *(SW2)*           Blue     -
 6.           Temperature       Green    -
-7.           SPI\_CLK          Yellow   P5.20
+7.           SPI_CLK           Yellow   P5.20
 8.           BUSY              Orange   p6.29
 9.           PWM               Brown    p6.27
 10.          /RESET            Black    p6.28
-11.          PANEL\_ON         Red      p6.24
+11.          PANEL_ON          Red      p6.24
 12.          DISCHARGE         White    p6.26
 13.          BORDER_CONTROL    Grey     p6.25
 14.          SPI_MISO          Purple   p5.21
 15.          SPI_MOSI          Blue     p5.22
 16.          *(RST/SBWTDIO)*   Green    -
 17.          *(TEST/SBWTCK)*   Yellow   -
-18.          FLASH\_CS         Orange   p6.30
-19.          /EPD\_CS          Brown    p5.23
+18.          /FLASH_CS         Orange   p6.30
+19.          /EPD_CS           Brown    p5.23
 20.          GND               Black    GND         
 ```
 ### Notes
