@@ -803,6 +803,22 @@ static void line(uint16_t line, const uint8_t * data,
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
+void EPD_write_stringz(unsigned char * text)
+{
+    unsigned char * ch;
+    uint8_t out [sizeof(EPD_chardef_t)];
+
+    for (ch = text; *ch; ++ch) {
+
+        memcpy(out, &EPD_font[*ch], sizeof(EPD_chardef_t));
+
+        EPD_image_0(out);
+    }
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
 static void PWM_start(int pin)
 {
     nrf_pwm_set_value(pin, 511);

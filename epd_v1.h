@@ -66,5 +66,6 @@ void EPD_image(const uint8_t *old_image, const uint8_t *new_image);
 // Change from old image to new image:  Only updating changed pixels
 void EPD_partial_image(const uint8_t *old_image, const uint8_t *new_image);
 
+void EPD_write_stringz(unsigned char * text);
 
 #endif /* EPD_V1_H */
