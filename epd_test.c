@@ -88,8 +88,8 @@
 // the main test program
 int epd_test(void)
 {
-    EPD_size display_size;
-    int      image_count;
+    EPD_size         display_size;
+    int              image_count;
     const uint8_t ** images;
 
     display_size = EPD_DISPLAY_SIZE;

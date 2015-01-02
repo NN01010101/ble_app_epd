@@ -105,11 +105,11 @@ struct EPD_struct {
 
     uint8_t * line_buffer;
     size_t    line_buffer_size;
-
-    app_timer_id_t timer;
 }; 
 
 typedef struct EPD_struct EPD_type;
+
+static app_timer_id_t epd_timer = -1;
 
 static EPD_type epd_instance;
 
@@ -156,18 +156,20 @@ void EPD_create(EPD_size size)
 
     /* Initialize PWM */
     nrf_pwm_config_t pwm_config = PWM_DEFAULT_CONFIG;
-        
+
     pwm_config.mode          = PWM_MODE_EPD;
     pwm_config.num_channels  = 1;
-    pwm_config.gpio_num[0]   = epd->EPD_Pin_PWM;        
+    pwm_config.gpio_num[0]   = epd->EPD_Pin_PWM;
 
     nrf_pwm_init(&pwm_config);
 
     /* Create timer. */
-    err_code =  app_timer_create(&epd->timer,
-                                 APP_TIMER_MODE_SINGLE_SHOT,
-                                 epd_timeout_handler);
-    APP_ERROR_CHECK(err_code);
+    if (epd_timer == -1) {
+        err_code =  app_timer_create(&epd_timer,
+                                     APP_TIMER_MODE_SINGLE_SHOT,
+                                     epd_timeout_handler);
+        APP_ERROR_CHECK(err_code);
+    }
 
     if (EPD_SPI_init() == false)
         APP_ERROR_CHECK(0x0BADCAFE);
@@ -245,14 +247,16 @@ void EPD_create(EPD_size size)
     epd->line_buffer      = line_buffer;
 
     // ensure I/O is all set to ZERO
-    power_off(epd);
+    power_off();
 }
 
 /*---------------------------------------------------------------------------*/
-/*  deallocate memory                                                        */
+/*  Deallocate memory                                                        */
 /*---------------------------------------------------------------------------*/
 void EPD_destroy(void)
 {
+    power_off();
+
     memset(epd, 0, sizeof(*epd));
 }
 
@@ -637,7 +641,7 @@ static void frame_fixed_repeat(uint8_t fixed_value, EPD_stage stage)
     its.it_interval.tv_sec  = 0;
     its.it_interval.tv_nsec = 0;
 
-    app_timer_start(epd->timer, epd->factored_stage_time, NULL);
+    app_timer_start(epd_timer, epd->factored_stage_time, NULL);
 
     do {
         frame_fixed(fixed_value, stage);
@@ -661,7 +665,7 @@ static void frame_data_repeat(const uint8_t * image,
     its.it_interval.tv_sec  = 0;
     its.it_interval.tv_nsec = 0;
 
-    timer_settime(epd->timer, 0, &its, NULL)
+    timer_settime(epd_timer, 0, &its, NULL)
 
     do {
         frame_data(image, mask, stage);
