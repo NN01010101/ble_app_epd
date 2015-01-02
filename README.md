@@ -22,34 +22,28 @@ the socket.
 ```
 Pin Number   Description       Color    PCA10001 
 ----------   ---------------   ------   --------- 
-1.           Vcc 3V            Red      3.3V
-2.           *(LED1)*          White    -
-3.           *(UART_RX)*       Grey     -
-4.           *(UART_TX)*       Purple   -
-5.           *(SW2)*           Blue     -
-6.           Temperature       Green    -
-7.           SPI\_CLK          Yellow   P5.20
+1.           Vcc 3V            Red      p5.Vcc
+2.           LED1              White    n/c
+3.           UART_RX           Grey     n/c
+4.           UART_TX           Purple   n/c
+5.           SW2               Blue     n/c
+6.           Temperature       Green    n/c
+7.           SPI_CLK           Yellow   P5.20
 8.           BUSY              Orange   p6.29
 9.           PWM               Brown    p6.27
 10.          /RESET            Black    p6.28
-11.          PANEL\_ON         Red      p6.24
+11.          PANEL_ON          Red      p6.24
 12.          DISCHARGE         White    p6.26
 13.          BORDER_CONTROL    Grey     p6.25
 14.          SPI_MISO          Purple   p5.21
 15.          SPI_MOSI          Blue     p5.22
-16.          *(RST/SBWTDIO)*   Green    -
-17.          *(TEST/SBWTCK)*   Yellow   -
-18.          FLASH\_CS         Orange   p6.30
-19.          /EPD\_CS          Brown    p5.23
-20.          GND               Black    GND         
+16.          RST/SBWTDIO       Green    n/c
+17.          TEST/SBWTCK       Yellow   n/c
+18.          /FLASH_CS         Orange   p6.30
+19.          /EPD_CS           Brown    p5.23
+20.          GND               Black    p5.GND         
 ```
 ### Notes
 
-* The above values in parentheses like *(SW2)*, are not connected
-  to the driver circuit and can be left open on non-LaunchPad
-  projects.  These are only provided so that all the LaunchPad pins
-  are brought through to the 20 pin connector.
-* Active low signals are indicated with a leading solidus (slash) e.g. /RESET
-* The ICSP pins on a Leonardo have a small dot to mark pin 1 and the letters ICSP
-  above it; pin 2 is to the right of pin 1, same as the normal IDC ribbon cable order
-  i.e. left colum 1,3,5 and right column 2,4,6. 
+* The above values marked as *n/c*, and are not connected to the PCA10001 board.  
+* Active low signals are indicated with a leading slash, e.g. */RESET*
