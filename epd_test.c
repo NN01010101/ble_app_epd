@@ -10,6 +10,8 @@
     #error "unsupported COG version"
 #endif
 
+static bool epd_busy = false;
+
 /* 
  * NOTE: All *.xbm files should have "const" in their image definition.
  *       This directs the build to put the bitmap in the Flash area,
@@ -90,31 +92,28 @@
 /*---------------------------------------------------------------------------*/
 void epd_slide_show(void)
 {
-    EPD_size         display_size;
-    int              image_count;
-    const uint8_t ** images;
+    if (epd_busy == true) return;
+    epd_busy = true;
 
-    display_size = EPD_DISPLAY_SIZE;
-    images       = images_array;
-    image_count  = SIZE_OF_ARRAY(images_array);
+    EPD_create(EPD_DISPLAY_SIZE);
 
-    EPD_create(display_size);
-
-    for (int i = 0; i < image_count; ++i) {
+    for (int i = 0; i < SIZE_OF_ARRAY(images_array); ++i) {
 
         EPD_begin();
 
         if (i == 0) {
-            EPD_image_0(images[i]);
+            EPD_image_0(images_array[i]);
         } 
         else {
-            EPD_image(images[i - 1], images[i]);
+            EPD_image(images_array[i - 1], images_array[i]);
         }
 
         EPD_end();
     }
 
     EPD_destroy();
+
+    epd_busy = false;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -122,9 +121,14 @@ void epd_slide_show(void)
 /*---------------------------------------------------------------------------*/
 void epd_clear_screen(void)
 {
+    if (epd_busy == true) return;
+    epd_busy = true;
+
     EPD_create(EPD_DISPLAY_SIZE);
     EPD_begin();
     EPD_clear();
     EPD_end();
     EPD_destroy();
+
+    epd_busy = false;
 }
