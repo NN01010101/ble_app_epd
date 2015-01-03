@@ -609,17 +609,18 @@ int main(void)
 
         /* Stop reading new data if there are no ble buffers available */
         if (ble_buffer_available) {
+
             if (app_uart_get(&newbyte) == NRF_SUCCESS) {
-                data_array[index++] =  newbyte;
+                data_array[index++] = newbyte;
                
-                if (index >= (BLE_NUS_MAX_DATA_LEN)) {
+                if (index >= (BLE_NUS_MAX_DATA_LEN) || newbyte == '\r') {
                     ble_buffer_available = ble_attempt_to_send(&data_array[0], index);
                     if (ble_buffer_available) 
                         index = 0;
                 }
             }
         }
-        /* Re-transmission if ble_buffer_available was set to false*/
+        /* Re-transmission if ble_buffer_available was set to false */
         if (tx_complete) {
             tx_complete = false;
             
