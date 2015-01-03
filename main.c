@@ -32,7 +32,8 @@
 
 
 #define WAKEUP_BUTTON_PIN               BUTTON_0                                    /**< Button used to wake up the application. */
-#define USER_ACTION_PIN                 BUTTON_1 
+#define USER_BUTTON_0_PIN               BUTTON_0 
+#define USER_BUTTON_1_PIN               BUTTON_1 
 
 #define ADVERTISING_LED_PIN_NO          LED_0                                       /**< LED to indicate advertising state. */
 #define CONNECTED_LED_PIN_NO            LED_1                                       /**< LED to indicate connected state. */
@@ -72,8 +73,8 @@
 
 #define __breakpoint     __ASM volatile ( "bkpt \n" )
 
-int epd_test(void);
-
+void epd_slide_show(void);
+void epd_clear_screen(void);
 
 static ble_gap_sec_params_t             m_sec_params;                               /**< Security requirements for this application. */
 static uint16_t                         m_conn_handle = BLE_CONN_HANDLE_INVALID;    /**< Handle of the current connection. */
@@ -82,7 +83,10 @@ static ble_nus_t                        m_nus;                                  
 static bool ble_buffer_available = true;
 static bool tx_complete = false;
 
-static bool user_button_pressed = false;
+static bool user_button_0_pressed = false;
+static bool user_button_1_pressed = false;
+
+
 
 /**@brief     Error handler function, which is called when an error has occurred.
  *
@@ -341,7 +345,6 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             nrf_gpio_pin_set(CONNECTED_LED_PIN_NO);
             nrf_gpio_pin_clear(ADVERTISING_LED_PIN_NO);
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
@@ -349,7 +352,6 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             m_conn_handle = BLE_CONN_HANDLE_INVALID;
 
             advertising_start();
-
             break;
 
         case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
@@ -457,28 +459,29 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
     {
         switch (pin_no)
         {
-            case USER_ACTION_PIN:
-                user_button_pressed = true;
+            case USER_BUTTON_0_PIN:
+                user_button_0_pressed = true;
                 break;
-                
+
+            case USER_BUTTON_1_PIN:
+                user_button_1_pressed = true;
+                break;
+
             default:
                 APP_ERROR_HANDLER(pin_no);
                 break;
         }
-    }    
+    }
 }
 
 /**@brief  Function for configuring the buttons.
  */
 static void buttons_init(void)
 {
-    nrf_gpio_cfg_sense_input(WAKEUP_BUTTON_PIN,
-                             BUTTON_PULL, 
-                             NRF_GPIO_PIN_SENSE_LOW);   
-
     static app_button_cfg_t buttons[] =
     {
-        {USER_ACTION_PIN, false, BUTTON_PULL, button_event_handler}
+        {USER_BUTTON_0_PIN, false, BUTTON_PULL, button_event_handler},
+        {USER_BUTTON_1_PIN, false, BUTTON_PULL, button_event_handler},
     };
     
     APP_BUTTON_INIT(buttons, sizeof(buttons) / sizeof(buttons[0]), BUTTON_DETECTION_DELAY, false);
@@ -629,10 +632,15 @@ int main(void)
                 index = 0;
         }
 
-        if (user_button_pressed) {
-            user_button_pressed = false;
+        if (user_button_0_pressed) {
+            user_button_0_pressed = false;
+            uart_putstring((const uint8_t *)"epd_clear\r\n");
+            epd_clear_screen();
+        }
+        if (user_button_1_pressed) {
+            user_button_1_pressed = false;
             uart_putstring((const uint8_t *)"epd_test\r\n");
-            epd_test();
+            epd_slide_show();
         }
 
         power_manage();

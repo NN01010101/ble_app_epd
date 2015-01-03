@@ -130,7 +130,7 @@ bool EPD_SPI_close(void)
 void EPD_SPI_on(void) 
 {
     if (spi_on == true) {
-        __ASM volatile ("bkpt \n");
+        //__ASM volatile ("bkpt \n");
         return;
     }
     spi_on = true;
@@ -156,7 +156,7 @@ void EPD_SPI_off(void)
     const uint8_t buffer[1] = {0};
 
     if (spi_on == false) {
-        __ASM volatile ("bkpt \n");
+        //__ASM volatile ("bkpt \n");
         return;
     }
     spi_on = false;

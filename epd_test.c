@@ -85,8 +85,10 @@
 
 #define SIZE_OF_ARRAY(a) (sizeof(a) / sizeof((a)[0]))
 
-// the main test program
-int epd_test(void)
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+void epd_slide_show(void)
 {
     EPD_size         display_size;
     int              image_count;
@@ -113,6 +115,16 @@ int epd_test(void)
     }
 
     EPD_destroy();
+}
 
-    return 0;
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+void epd_clear_screen(void)
+{
+    EPD_create(EPD_DISPLAY_SIZE);
+    EPD_begin();
+    EPD_clear();
+    EPD_end();
+    EPD_destroy();
 }
