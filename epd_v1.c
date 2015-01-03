@@ -29,8 +29,6 @@
 #include "epd_v1.h"
 #include "epd_spi.h"
 
-#include "font_7x8.h"
-
 /*
  *  NOTES:
  *
@@ -760,22 +758,6 @@ static void line(uint16_t line, const uint8_t * data,
     EPD_SPI_send(PARMS(0x72, 0x2f), 2);
 
     EPD_SPI_off();
-}
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
-void EPD_write_stringz(unsigned char * text)
-{
-    unsigned char * ch;
-    uint8_t out [sizeof(EPD_chardef_t)];
-
-    for (ch = text; *ch; ++ch) {
-
-        memcpy(out, &EPD_font[*ch], sizeof(EPD_chardef_t));
-
-        EPD_image_0(out);
-    }
 }
 
 /*---------------------------------------------------------------------------*/

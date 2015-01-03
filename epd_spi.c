@@ -1,5 +1,4 @@
 //
-//
 // Copyright 2014 Robin Callender
 // Copyright 2013 Pervasive Displays, Inc.
 //

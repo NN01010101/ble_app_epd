@@ -1,6 +1,5 @@
 /* 
  *  Copyright (c) 2014 Robin Callender. All Rights Reserved.
- *
  *  Copyright (c) 2014 Nordic Semiconductor. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license that can be
@@ -38,7 +37,7 @@
 #define ADVERTISING_LED_PIN_NO          LED_0                                       /**< LED to indicate advertising state. */
 #define CONNECTED_LED_PIN_NO            LED_1                                       /**< LED to indicate connected state. */
 
-#define DEVICE_NAME                     "BLE_UART"                                  /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "EPD_UART"                                  /**< Name of device. Will be included in the advertising data. */
 
 #define APP_ADV_INTERVAL                64                                          /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout (in units of seconds). */
@@ -212,6 +211,7 @@ void nus_data_handler(ble_nus_t * p_nus, uint8_t * p_data, uint16_t length)
     for (int i = 0; i < length; i++) {
         app_uart_put(p_data[i]);
     }
+    app_uart_put('\r');
     app_uart_put('\n');
 }
 /**@snippet [Handling the data received over BLE] */
@@ -583,8 +583,6 @@ static void gpiote_init(void)
  */
 int main(void)
 {
-
-
     // Initialize
     leds_init();
     timers_init();
@@ -598,16 +596,13 @@ int main(void)
     conn_params_init();
     sec_params_init();
 
-
-    //uart_putstring("\n*** Firmware built: %s %s ***\n\n", __DATE__, __TIME__);
     uart_putstring((const uint8_t *)START_STRING);
 
-//    advertising_start();
+    advertising_start();
 
     // Enter main loop
     for (;;) { 
 
-#if 0
         static uint8_t data_array[BLE_NUS_MAX_DATA_LEN];
         static uint8_t index = 0;
         uint8_t newbyte;
@@ -632,7 +627,6 @@ int main(void)
             if (ble_buffer_available) 
                 index = 0;
         }
-#endif
 
         if (user_button_pressed) {
             user_button_pressed = false;
