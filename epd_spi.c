@@ -103,11 +103,11 @@ static void set_spi_mode(spi_mode_t mode)
 bool EPD_SPI_init(void)
 {
     uint32_t err_code;
-    
-    spi_on = false;
 
     err_code = spi_init(EPD_SPI_CONTROLLER, &epd_spi_config);
     APP_ERROR_CHECK(err_code);
+
+    spi_on = true;
 
     return true;
 }
@@ -129,8 +129,10 @@ bool EPD_SPI_close(void)
 /*---------------------------------------------------------------------------*/
 void EPD_SPI_on(void) 
 {
-    if (spi_on == true)
+    if (spi_on == true) {
+        __ASM volatile ("bkpt \n");
         return;
+    }
     spi_on = true;
 
     const uint8_t buffer[1] = {0};
@@ -153,8 +155,10 @@ void EPD_SPI_off(void)
 {
     const uint8_t buffer[1] = {0};
 
-    if (spi_on == false)
+    if (spi_on == false) {
+        __ASM volatile ("bkpt \n");
         return;
+    }
     spi_on = false;
 
     set_spi_mode(SPI_MODE_0);
