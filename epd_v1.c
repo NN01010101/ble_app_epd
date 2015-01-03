@@ -31,6 +31,15 @@
 
 #include "font_7x8.h"
 
+/*
+ *  NOTES:
+ *
+ *  1) For this version of the COG, only full-display updates are supported.
+ *     Pervasive Display states that they will have a partial display 
+ *     updates support available sometime around the end of January 2015.
+ *     You will notice that there is code in this module which is a start
+ *     at supporting partial display updates, but not completed yet.
+ */
 
 // delays - more consistent naming
 #define Delay_ms(ms)   nrf_delay_ms(ms)
@@ -74,8 +83,6 @@ static void frame_data_repeat(const uint8_t *image,
 static void line(uint16_t line, const uint8_t *data, uint8_t fixed_value, 
                  const uint8_t *mask, EPD_stage stage);
 
-static void epd_timeout_handler(void * p_context);
-
 /*---------------------------------------------------------------------------*/
 /*   panel configuration                                                     */
 /*---------------------------------------------------------------------------*/
@@ -109,8 +116,6 @@ struct EPD_struct {
 
 typedef struct EPD_struct EPD_type;
 
-static app_timer_id_t epd_timer = -1;
-
 static EPD_type epd_instance;
 
 EPD_type * epd = &epd_instance;
@@ -143,12 +148,10 @@ void EPD_GPIO_init(void)
 }
 
 /*---------------------------------------------------------------------------*/
-/*                                                                           */
+/*  Create instance                                                          */
 /*---------------------------------------------------------------------------*/
 void EPD_create(EPD_size size) 
 {
-    uint32_t err_code;
-
     memset(epd, 0, sizeof(*epd));
 
     /* Configure EPD's GPIO pins */
@@ -162,14 +165,6 @@ void EPD_create(EPD_size size)
     pwm_config.gpio_num[0]   = epd->EPD_Pin_PWM;
 
     nrf_pwm_init(&pwm_config);
-
-    /* Create timer. */
-    if (epd_timer == -1) {
-        err_code =  app_timer_create(&epd_timer,
-                                     APP_TIMER_MODE_SINGLE_SHOT,
-                                     epd_timeout_handler);
-        APP_ERROR_CHECK(err_code);
-    }
 
     if (EPD_SPI_init() == false)
         APP_ERROR_CHECK(0x0BADCAFE);
@@ -241,6 +236,8 @@ void EPD_create(EPD_size size)
 
     epd->factored_stage_time = epd->stage_time;
 
+    EPD_set_temperature(23);   // assume 23 degrees Celcius (73 degrees F)
+
     // buffer for frame line --
     // command byte, border byte and filler byte
     epd->line_buffer_size = 2 * epd->bytes_per_line + epd->bytes_per_scan + 3; 
@@ -251,7 +248,7 @@ void EPD_create(EPD_size size)
 }
 
 /*---------------------------------------------------------------------------*/
-/*  Deallocate memory                                                        */
+/*  Destroy instance                                                         */
 /*---------------------------------------------------------------------------*/
 void EPD_destroy(void)
 {
@@ -261,7 +258,7 @@ void EPD_destroy(void)
 }
 
 /*---------------------------------------------------------------------------*/
-/*  starts an EPD sequence                                                   */
+/*  Starts an EPD sequence                                                   */
 /*---------------------------------------------------------------------------*/
 void EPD_begin(void)
 {
@@ -381,7 +378,7 @@ void EPD_begin(void)
 }
 
 /*---------------------------------------------------------------------------*/
-/*                                                                           */
+/*  Ends an EPD sequence                                                     */
 /*---------------------------------------------------------------------------*/
 void EPD_end(void)
 {
@@ -551,7 +548,7 @@ void EPD_partial_image(const uint8_t *old_image, const uint8_t * new_image)
 }
 
 /*---------------------------------------------------------------------------*/
-/*  convert a temperature in Celcius to                                      */
+/*  Convert a temperature in Celcius to                                      */
 /*  the scale factor for frame_*_repeat methods                              */
 /*---------------------------------------------------------------------------*/
 static int temperature_to_factor_10x(int temperature)
@@ -622,33 +619,10 @@ static void frame_data(const uint8_t * image,
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-static void epd_timeout_handler(void * p_context)
-{
-
-
-}
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
 static void frame_fixed_repeat(uint8_t fixed_value, EPD_stage stage)
 {
-#if 0 
-    struct itimerspec its;
-
-    its.it_value.tv_sec     = epd->factored_stage_time / 1000;
-    its.it_value.tv_nsec    = (epd->factored_stage_time % 1000) * 1000000;
-    its.it_interval.tv_sec  = 0;
-    its.it_interval.tv_nsec = 0;
-
-    app_timer_start(epd_timer, epd->factored_stage_time, NULL);
-
-    do {
-        frame_fixed(fixed_value, stage);
-        timer_gettime(epd->timer, &its)
-
-    } while (its.it_value.tv_sec > 0 && its.it_value.tv_nsec > 0);
-#endif
+    frame_fixed(fixed_value, stage);
+    Delay_ms(epd->factored_stage_time);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -657,24 +631,8 @@ static void frame_fixed_repeat(uint8_t fixed_value, EPD_stage stage)
 static void frame_data_repeat(const uint8_t * image,
                               const uint8_t * mask, EPD_stage stage)
 {
-#if 0   
-    struct itimerspec its;
-
-    its.it_value.tv_sec     = epd->factored_stage_time / 1000;
-    its.it_value.tv_nsec    = (epd->factored_stage_time % 1000) * 1000000;
-    its.it_interval.tv_sec  = 0;
-    its.it_interval.tv_nsec = 0;
-
-    timer_settime(epd_timer, 0, &its, NULL)
-
-    do {
-        frame_data(image, mask, stage);
-        timer_gettime(epd->timer, &its)
-
-    } while (its.it_value.tv_sec > 0 && its.it_value.tv_nsec > 0);
-#else
-        frame_data(image, mask, stage);    
-#endif
+    frame_data(image, mask, stage);
+    Delay_ms(epd->factored_stage_time);
 }
 
 /*---------------------------------------------------------------------------*/
