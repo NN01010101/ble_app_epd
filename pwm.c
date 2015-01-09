@@ -1,6 +1,8 @@
 /*---------------------------------------------------------------------------*/
 /* Copyright (c) 2014 Robin Callender. All Rights Reserved.                  */
 /*---------------------------------------------------------------------------*/
+#include <stdio.h>
+
 #include "nrf.h"
 #include "nrf_gpiote.h"
 #include "nrf_gpio.h"
@@ -106,6 +108,8 @@ nrf_radio_signal_callback_return_param_t * nrf_radio_signal_callback(uint8_t sig
 /*---------------------------------------------------------------------------*/
 uint32_t nrf_pwm_init(nrf_pwm_config_t * config)
 {
+    puts(__FUNCTION__);
+
     if (config->num_channels == 0 || config->num_channels > PWM_MAX_CHANNELS) 
         return 0xFFFFFFFF;
     
@@ -227,6 +231,9 @@ uint32_t nrf_pwm_init(nrf_pwm_config_t * config)
 /*---------------------------------------------------------------------------*/
 void nrf_pwm_set_value(uint32_t pwm_channel, uint32_t pwm_value)
 {
+    printf("%s: channel %u, value %u\n", __FUNCTION__, 
+          (unsigned)pwm_channel, (unsigned)pwm_value);
+
     pwm_next_value[pwm_channel] = pwm_value;
     pwm_modified[pwm_channel] = true;
 
@@ -272,6 +279,8 @@ void nrf_pwm_set_max_value(uint32_t max_value)
 /*---------------------------------------------------------------------------*/
 void nrf_pwm_set_enabled(bool enabled)
 {
+    printf("%s:  %s\n", __FUNCTION__, (enabled)?"enable":"disable");
+
     if (enabled) {
         PWM_TIMER->TASKS_START = 1;
         if (pwm_num_channels > 2)

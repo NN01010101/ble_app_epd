@@ -281,7 +281,6 @@ void EPD_begin(void)
     Delay_ms(5);
 
     digitalWrite(epd->EPD_Pin_RESET, HIGH);
-    Delay_ms(5);
 
     // wait for COG to become ready
     while (digitalRead(epd->EPD_Pin_BUSY) == HIGH) {
@@ -289,61 +288,43 @@ void EPD_begin(void)
     }
 
     // channel select
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x01), 2);
-    Delay_us(10);
     EPD_SPI_send(epd->channel_select, epd->channel_select_length);
 
     // DC/DC frequency
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x06), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0xff), 2);
 
     // high power mode osc
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x07), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x9d), 2);
 
     // disable ADC
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x08), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x00), 2);
 
     // Vcom level
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x09), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0xd0, 0x00), 3);
 
     // gate and source voltage levels
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    Delay_us(10);
     EPD_SPI_send(epd->gate_source, epd->gate_source_length);
 
     Delay_ms(5);  //???
 
     // driver latch on
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x03), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x01), 2);
 
     // driver latch off
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x03), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x00), 2);
 
     Delay_ms(5);
 
     // charge pump positive voltage on
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x01), 2);
 
     // final delay before PWM off
@@ -351,25 +332,19 @@ void EPD_begin(void)
     PWM_stop(epd->EPD_Pin_PWM);
 
     // charge pump negative voltage on
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x03), 2);
 
     Delay_ms(30);
 
     // Vcom driver on
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x0f), 2);
 
     Delay_ms(30);
 
     // output enable to disable
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x02), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x24), 2);
 
     EPD_SPI_off();
@@ -403,71 +378,50 @@ void EPD_end(void)
     EPD_SPI_on();
 
     // latch reset turn on
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x03), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x01), 2);
 
     // output enable off
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x02), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x05), 2);
 
     // Vcom power off
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x0e), 2);
 
     // power off negative charge pump
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x02), 2);
 
     // discharge
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x0c), 2);
 
     Delay_ms(120);
 
     // all charge pumps off
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x00), 2);
 
     // turn of osc
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x07), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x0d), 2);
 
     // discharge internal - 1
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x50), 2);
 
     Delay_ms(40);
 
     // discharge internal - 2
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0xA0), 2);
 
     Delay_ms(40);
 
     // discharge internal - 3
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x00), 2);
-    Delay_us(10);
 
     power_off();
 }
@@ -642,15 +596,11 @@ static void line(uint16_t line, const uint8_t * data,
     EPD_SPI_on();
 
     // charge pump voltage levels
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    Delay_us(10);
     EPD_SPI_send(epd->gate_source, epd->gate_source_length);
 
     // send data
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x0a), 2);
-    Delay_us(10);
 
     // CS low
     uint8_t * p = epd->line_buffer;
@@ -752,9 +702,7 @@ static void line(uint16_t line, const uint8_t * data,
     EPD_SPI_send(epd->line_buffer, p - epd->line_buffer);
 
     // output data to panel
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x70, 0x02), 2);
-    Delay_us(10);
     EPD_SPI_send(PARMS(0x72, 0x2f), 2);
 
     EPD_SPI_off();
@@ -765,7 +713,10 @@ static void line(uint16_t line, const uint8_t * data,
 /*---------------------------------------------------------------------------*/
 static void PWM_start(int pin)
 {
-    nrf_pwm_set_value(pin, 511);
+    puts(__FUNCTION__);
+
+    nrf_pwm_set_enabled(true);
+    nrf_pwm_set_value(0, 62);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -773,5 +724,8 @@ static void PWM_start(int pin)
 /*---------------------------------------------------------------------------*/
 static void PWM_stop(int pin)
 {
-    nrf_pwm_set_value(EPD_PWM_PIN, 0);
+    puts(__FUNCTION__);
+
+    nrf_pwm_set_value(0, 0);
+    nrf_pwm_set_enabled(false);
 }

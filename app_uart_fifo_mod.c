@@ -10,6 +10,10 @@
  *
  */
 
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "app_uart.h"
 #include "app_fifo.h"
 #include "nrf.h"
@@ -615,3 +619,22 @@ uint32_t app_uart_close(uint16_t app_uart_uid)
     return app_gpiote_user_disable(m_gpiote_uid);
 }
 
+
+void uart_putc(uint8_t ch)
+{
+    uint32_t err_code;
+    err_code = app_uart_put(ch);
+    APP_ERROR_CHECK(err_code);
+}
+
+
+void uart_puts(uint8_t * str)
+{
+    uint32_t err_code;
+    uint8_t  len = strlen((char *) str);
+
+    for (uint8_t i = 0; i < len; i++) {
+        err_code = app_uart_put(str[i]);
+        APP_ERROR_CHECK(err_code);
+    }
+}

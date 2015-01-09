@@ -28,7 +28,7 @@
 #define UART_IRQ_PRIORITY                       APP_IRQ_PRIORITY_LOW
 
 #define     RX_BUF_SIZE     32   /**< Size of desired RX buffer, must be a power of 2 or ZERO (No FIFO). */
-#define     TX_BUF_SIZE     32   /**< Size of desired TX buffer, must be a power of 2 or ZERO (No FIFO) */
+#define     TX_BUF_SIZE     256  /**< Size of desired TX buffer, must be a power of 2 or ZERO (No FIFO) */
 
 /**
  *@breif UART configuration structure

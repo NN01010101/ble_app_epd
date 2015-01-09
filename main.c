@@ -7,6 +7,7 @@
  */
 
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "nordic_common.h"
@@ -501,18 +502,6 @@ static void power_manage(void)
 }
 
 
-void uart_putstring(const uint8_t * str)
-{
-    uint32_t err_code;
-    uint8_t  len = strlen((char *) str);
-
-    for (uint8_t i = 0; i < len; i++) {
-        err_code = app_uart_put(str[i]);
-        APP_ERROR_CHECK(err_code);
-    }
-}
-
-
 /**@brief   Function for handling UART interrupts.
  *
  * @details This function will receive a single character from the UART and append it to a string.
@@ -599,13 +588,14 @@ int main(void)
     conn_params_init();
     sec_params_init();
 
-    uart_putstring((const uint8_t *)START_STRING);
+    printf("\n\n*** Firmware built: %s %s ***\n\n", __DATE__, __TIME__);
 
-    advertising_start();
+//    advertising_start();
 
     // Enter main loop
     for (;;) { 
 
+#if 0
         static uint8_t data_array[BLE_NUS_MAX_DATA_LEN];
         static uint8_t index = 0;
         uint8_t newbyte;
@@ -631,15 +621,16 @@ int main(void)
             if (ble_buffer_available) 
                 index = 0;
         }
+#endif
 
         if (user_button_0_pressed) {
             user_button_0_pressed = false;
-            uart_putstring((const uint8_t *)"epd_clear\r\n");
+            puts("epd_clear");
             epd_clear_screen();
         }
         if (user_button_1_pressed) {
             user_button_1_pressed = false;
-            uart_putstring((const uint8_t *)"epd_test\r\n");
+            puts("epd_test");
             epd_slide_show();
         }
 
