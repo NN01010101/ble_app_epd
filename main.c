@@ -66,13 +66,9 @@
 #define SEC_PARAM_MIN_KEY_SIZE          7                                           /**< Minimum encryption key size. */
 #define SEC_PARAM_MAX_KEY_SIZE          16                                          /**< Maximum encryption key size. */
 
-#define START_STRING                    "Start...\r\n"                              /**< The string that will be sent over the UART when the application starts. */
-
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
 #define APP_GPIOTE_MAX_USERS            3
-
-#define __breakpoint     __ASM volatile ( "bkpt \n" )
 
 void epd_slide_show(void);
 void epd_clear_screen(void);
@@ -571,6 +567,7 @@ static void gpiote_init(void)
     APP_GPIOTE_INIT(APP_GPIOTE_MAX_USERS);
 }
 
+
 /**@brief  Application main function.
  */
 int main(void)
@@ -630,7 +627,7 @@ int main(void)
         }
         if (user_button_1_pressed) {
             user_button_1_pressed = false;
-            puts("epd_test");
+            puts("epd_slide_show");
             epd_slide_show();
         }
 

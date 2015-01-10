@@ -133,9 +133,14 @@ void EPD_GPIO_init(void)
     nrf_gpio_cfg_output(EPD_DISCHARGE_PIN);
     nrf_gpio_cfg_output(EPD_PWM_PIN);
     nrf_gpio_cfg_output(EPD_RESET_PIN);
-    //nrf_gpio_cfg_output(EPD_FLASH_CS_PIN);      // currently unused
 
     nrf_gpio_cfg_input(EPD_BUSY_PIN, NRF_GPIO_PIN_PULLUP);
+
+    nrf_gpio_pin_clear(EPD_PANEL_ON_PIN);
+    nrf_gpio_pin_clear(EPD_BORDER_PIN);
+    nrf_gpio_pin_clear(EPD_DISCHARGE_PIN);
+    nrf_gpio_pin_clear(EPD_PWM_PIN);
+    nrf_gpio_pin_set(EPD_RESET_PIN);
 
     epd->EPD_Pin_PANEL_ON  = EPD_PANEL_ON_PIN;
     epd->EPD_Pin_BORDER    = EPD_BORDER_PIN;
@@ -713,8 +718,6 @@ static void line(uint16_t line, const uint8_t * data,
 /*---------------------------------------------------------------------------*/
 static void PWM_start(int pin)
 {
-    puts(__FUNCTION__);
-
     nrf_pwm_set_enabled(true);
     nrf_pwm_set_value(0, 62);
 }
@@ -724,8 +727,6 @@ static void PWM_start(int pin)
 /*---------------------------------------------------------------------------*/
 static void PWM_stop(int pin)
 {
-    puts(__FUNCTION__);
-
     nrf_pwm_set_value(0, 0);
     nrf_pwm_set_enabled(false);
 }
