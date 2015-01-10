@@ -22,26 +22,26 @@ the socket.
 ```
 Pin Number   Description       Color    PCA10001 
 ----------   ---------------   ------   --------- 
-1.           Vcc 3V            Red      p5.Vcc
+1.           Vcc 3V            Red      p4.Vcc
 2.           LED1              White    n/c
 3.           UART_RX           Grey     n/c
 4.           UART_TX           Purple   n/c
 5.           SW2               Blue     n/c
 6.           Temperature       Green    n/c
-7.           SPI_CLK           Yellow   P5.20
-8.           BUSY              Orange   p6.29
-9.           PWM               Brown    p6.27
-10.          /RESET            Black    p6.28
-11.          PANEL_ON          Red      p6.24
-12.          DISCHARGE         White    p6.26
-13.          BORDER_CONTROL    Grey     p6.25
-14.          SPI_MISO          Purple   p5.21
-15.          SPI_MOSI          Blue     p5.22
+7.           SPI_CLK           Yellow   P4.12
+8.           BUSY              Orange   p3.05
+9.           PWM               Brown    p3.03
+10.          /RESET            Black    p3,04
+11.          PANEL_ON          Red      p3.00
+12.          DISCHARGE         White    p3.02
+13.          BORDER_CONTROL    Grey     p3.01
+14.          SPI_MISO          Purple   p4.13
+15.          SPI_MOSI          Blue     p4.14
 16.          RST/SBWTDIO       Green    n/c
 17.          TEST/SBWTCK       Yellow   n/c
-18.          /FLASH_CS         Orange   p6.30
-19.          /EPD_CS           Brown    p5.23
-20.          GND               Black    p5.GND         
+18.          /FLASH_CS         Orange   n/c
+19.          /EPD_CS           Brown    p4.15
+20.          GND               Black    p4.GND         
 ```
 ### Notes
 
