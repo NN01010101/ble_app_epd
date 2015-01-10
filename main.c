@@ -587,12 +587,12 @@ int main(void)
 
     printf("\n\n*** Firmware built: %s %s ***\n\n", __DATE__, __TIME__);
 
-//    advertising_start();
+    advertising_start();
 
     // Enter main loop
     for (;;) { 
 
-#if 0
+#if 1
         static uint8_t data_array[BLE_NUS_MAX_DATA_LEN];
         static uint8_t index = 0;
         uint8_t newbyte;
