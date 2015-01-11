@@ -51,7 +51,7 @@ typedef enum {
  */
 spi_master_config_t   epd_spi_config = {
 
-    SPI_FREQUENCY_FREQUENCY_M1,     /* Serial clock frequency  */
+    SPI_FREQUENCY_FREQUENCY_M4,     /* Serial clock frequency  */
     SPI_M0_SCK_PIN,                 /* SCK pin                 */
     SPI_M0_MISO_PIN,                /* MISO pin                */
     SPI_M0_MOSI_PIN,                /* MOSI pin                */
@@ -130,7 +130,6 @@ bool EPD_SPI_close(void)
 void EPD_SPI_on(void) 
 {
     if (spi_on == true) {
-        //__ASM volatile ("bkpt \n");
         return;
     }
     spi_on = true;
@@ -156,7 +155,6 @@ void EPD_SPI_off(void)
     const uint8_t buffer[1] = {0};
 
     if (spi_on == false) {
-        //__ASM volatile ("bkpt \n");
         return;
     }
     spi_on = false;
