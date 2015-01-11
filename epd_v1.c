@@ -46,6 +46,9 @@
 #define LOW  0
 #define HIGH 1
 
+#define REG_INDEX   0x70
+#define REG_DATA    0x72
+
 #define digitalRead(pin)            nrf_gpio_pin_read(pin)
 #define digitalWrite(pin, value)    nrf_gpio_pin_write(pin, value)
 
@@ -133,14 +136,18 @@ void EPD_GPIO_init(void)
     nrf_gpio_cfg_output(EPD_DISCHARGE_PIN);
     nrf_gpio_cfg_output(EPD_PWM_PIN);
     nrf_gpio_cfg_output(EPD_RESET_PIN);
+    nrf_gpio_cfg_output(SPI_M0_CSN_PIN);
 
     nrf_gpio_cfg_input(EPD_BUSY_PIN, NRF_GPIO_PIN_PULLUP);
 
+#if 1
     nrf_gpio_pin_clear(EPD_PANEL_ON_PIN);
     nrf_gpio_pin_clear(EPD_BORDER_PIN);
     nrf_gpio_pin_clear(EPD_DISCHARGE_PIN);
     nrf_gpio_pin_clear(EPD_PWM_PIN);
     nrf_gpio_pin_set(EPD_RESET_PIN);
+    nrf_gpio_pin_set(SPI_M0_CSN_PIN);
+#endif
 
     epd->EPD_Pin_PANEL_ON  = EPD_PANEL_ON_PIN;
     epd->EPD_Pin_BORDER    = EPD_BORDER_PIN;
@@ -293,64 +300,64 @@ void EPD_begin(void)
     }
 
     // channel select
-    EPD_SPI_send(PARMS(0x70, 0x01), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x01), 2);
     EPD_SPI_send(epd->channel_select, epd->channel_select_length);
 
     // DC/DC frequency
-    EPD_SPI_send(PARMS(0x70, 0x06), 2);
-    EPD_SPI_send(PARMS(0x72, 0xff), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x06), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0xff), 2);
 
     // high power mode osc
-    EPD_SPI_send(PARMS(0x70, 0x07), 2);
-    EPD_SPI_send(PARMS(0x72, 0x9d), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x07), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x9d), 2);
 
     // disable ADC
-    EPD_SPI_send(PARMS(0x70, 0x08), 2);
-    EPD_SPI_send(PARMS(0x72, 0x00), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x08), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x00), 2);
 
     // Vcom level
-    EPD_SPI_send(PARMS(0x70, 0x09), 2);
-    EPD_SPI_send(PARMS(0x72, 0xd0, 0x00), 3);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x09), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0xd0, 0x00), 3);
 
     // gate and source voltage levels
-    EPD_SPI_send(PARMS(0x70, 0x04), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x04), 2);
     EPD_SPI_send(epd->gate_source, epd->gate_source_length);
 
     Delay_ms(5);  //???
 
     // driver latch on
-    EPD_SPI_send(PARMS(0x70, 0x03), 2);
-    EPD_SPI_send(PARMS(0x72, 0x01), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x03), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x01), 2);
 
     // driver latch off
-    EPD_SPI_send(PARMS(0x70, 0x03), 2);
-    EPD_SPI_send(PARMS(0x72, 0x00), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x03), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x00), 2);
 
     Delay_ms(5);
 
     // charge pump positive voltage on
-    EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    EPD_SPI_send(PARMS(0x72, 0x01), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x05), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x01), 2);
 
     // final delay before PWM off
     Delay_ms(30);
     PWM_stop(epd->EPD_Pin_PWM);
 
     // charge pump negative voltage on
-    EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    EPD_SPI_send(PARMS(0x72, 0x03), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x05), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x03), 2);
 
     Delay_ms(30);
 
     // Vcom driver on
-    EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    EPD_SPI_send(PARMS(0x72, 0x0f), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x05), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x0f), 2);
 
     Delay_ms(30);
 
     // output enable to disable
-    EPD_SPI_send(PARMS(0x70, 0x02), 2);
-    EPD_SPI_send(PARMS(0x72, 0x24), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x02), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x24), 2);
 
     EPD_SPI_off();
 }
@@ -383,50 +390,50 @@ void EPD_end(void)
     EPD_SPI_on();
 
     // latch reset turn on
-    EPD_SPI_send(PARMS(0x70, 0x03), 2);
-    EPD_SPI_send(PARMS(0x72, 0x01), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x03), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x01), 2);
 
     // output enable off
-    EPD_SPI_send(PARMS(0x70, 0x02), 2);
-    EPD_SPI_send(PARMS(0x72, 0x05), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x02), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x05), 2);
 
     // Vcom power off
-    EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    EPD_SPI_send(PARMS(0x72, 0x0e), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x05), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x0e), 2);
 
     // power off negative charge pump
-    EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    EPD_SPI_send(PARMS(0x72, 0x02), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x05), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x02), 2);
 
     // discharge
-    EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    EPD_SPI_send(PARMS(0x72, 0x0c), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x04), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x0c), 2);
 
     Delay_ms(120);
 
     // all charge pumps off
-    EPD_SPI_send(PARMS(0x70, 0x05), 2);
-    EPD_SPI_send(PARMS(0x72, 0x00), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x05), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x00), 2);
 
     // turn of osc
-    EPD_SPI_send(PARMS(0x70, 0x07), 2);
-    EPD_SPI_send(PARMS(0x72, 0x0d), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x07), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x0d), 2);
 
     // discharge internal - 1
-    EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    EPD_SPI_send(PARMS(0x72, 0x50), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x04), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x50), 2);
 
     Delay_ms(40);
 
     // discharge internal - 2
-    EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    EPD_SPI_send(PARMS(0x72, 0xA0), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x04), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0xA0), 2);
 
     Delay_ms(40);
 
     // discharge internal - 3
-    EPD_SPI_send(PARMS(0x70, 0x04), 2);
-    EPD_SPI_send(PARMS(0x72, 0x00), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x04), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x00), 2);
 
     power_off();
 }
@@ -601,11 +608,11 @@ static void line(uint16_t line, const uint8_t * data,
     EPD_SPI_on();
 
     // charge pump voltage levels
-    EPD_SPI_send(PARMS(0x70, 0x04), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x04), 2);
     EPD_SPI_send(epd->gate_source, epd->gate_source_length);
 
     // send data
-    EPD_SPI_send(PARMS(0x70, 0x0a), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x0a), 2);
 
     // CS low
     uint8_t * p = epd->line_buffer;
@@ -707,8 +714,8 @@ static void line(uint16_t line, const uint8_t * data,
     EPD_SPI_send(epd->line_buffer, p - epd->line_buffer);
 
     // output data to panel
-    EPD_SPI_send(PARMS(0x70, 0x02), 2);
-    EPD_SPI_send(PARMS(0x72, 0x2f), 2);
+    EPD_SPI_send(PARMS(REG_INDEX, 0x02), 2);
+    EPD_SPI_send(PARMS(REG_DATA,  0x2f), 2);
 
     EPD_SPI_off();
 }
