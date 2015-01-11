@@ -180,17 +180,3 @@ void EPD_SPI_send(const uint8_t * buffer, uint16_t length)
                              NULL, 0);
     APP_ERROR_CHECK(err_code);
 }
-
-/*---------------------------------------------------------------------------*/
-/*  Send a data block to SPI and return bytes sent by slave device.          */
-/*---------------------------------------------------------------------------*/
-void EPD_SPI_read(const uint8_t * buffer, uint8_t * received, uint16_t length)
-{
-    uint32_t err_code;
-
-    err_code = spi_send_recv(EPD_SPI_CONTROLLER, 
-                             (uint8_t * const) buffer, length, 
-                             (uint8_t * const) received, length);
-    APP_ERROR_CHECK(err_code);
-}
-

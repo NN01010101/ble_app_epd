@@ -41,10 +41,7 @@ void EPD_SPI_on(void);
 // Disable SPI, ensures a zero byte was sent (MOSI=0)
 void EPD_SPI_off(void);
 
-// Send a data block to SPI
+// Send a data block to SPI -- NOTE: EPD is write-only device.
 void EPD_SPI_send(const uint8_t * buffer, uint16_t length);
-
-// Send a data block to SPI and return last bytes returned by slave
-void EPD_SPI_read(const uint8_t * buffer, uint8_t * received, uint16_t length);
 
 #endif /* _EPD_SPI_H */
