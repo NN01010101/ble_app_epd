@@ -3,6 +3,8 @@ ble_app_epd
 
 Nordic nRF51822 PCA10001 support for Pervasive Display Extension Board and 1.44" ePaper display
  
+See the wiki at https://github.com/foldedtoad/ble_app_epd/wiki for more details
+ 
 Requirements
 ------------
 - nRF51 SDK version 6.1.0
