@@ -9,7 +9,7 @@ C_SOURCE_FILES += pwm.c
 C_SOURCE_FILES += spi_bus.c
 C_SOURCE_FILES += epd_spi.c
 C_SOURCE_FILES += epd_v1.c
-C_SOURCE_FILES += epd_test.c
+C_SOURCE_FILES += epd_app.c
 C_SOURCE_FILES += printf.c
 
 C_SOURCE_FILES += ble_srv_common.c

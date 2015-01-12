@@ -8,6 +8,7 @@
 
 #include "ble_nus.h"
 #include "app_timer.h"
+#include "epd_app.h"
 
 #if EPD_COG_VERSION == 1
     #include "epd_v1.h"
@@ -148,7 +149,7 @@ static void send_cmd_response(char * stringz)
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-void epd_processs(void)      
+void epd_process(void)      
 {
     if (function != NULL) {
         function();

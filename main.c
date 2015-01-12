@@ -28,7 +28,7 @@
 #include "app_util_platform.h"
 
 #include "pca10001_board.h"
-#include "epd_test.h"
+#include "epd_app.h"
 
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 0                                           /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
 
@@ -90,7 +90,7 @@ static bool tx_complete = false;
  */
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name)
 {
-    //printf("app_error_handler: 0x%x, %d, %s", (unsigned)error_code, (int)line_num, (char*)p_file_name);
+    printf("app_error_handler: 0x%x, %d, %s", (unsigned)error_code, (int)line_num, (char*)p_file_name);
 
     __breakpoint;
     __disable_irq();
@@ -583,7 +583,8 @@ int main(void)
                 index = 0;
         }
 
-        epd_processs();
+        /* Check if EPD processing is needed */
+        epd_process();
 
         power_manage();
     }
