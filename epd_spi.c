@@ -58,7 +58,7 @@ spi_master_config_t   epd_spi_config = {
     SPI_M0_CSN_PIN,                 /* Select pin              */
     APP_IRQ_PRIORITY_LOW,           /* Interrupt priority      */
     SPI_CONFIG_ORDER_MsbFirst,      /* Bits order              */
-    SPI_CONFIG_CPOL_ActiveLow,      /* Serial clock polarity   */
+    SPI_CONFIG_CPOL_ActiveHigh,      /* Serial clock polarity   */
     SPI_CONFIG_CPHA_Leading,        /* Serial clock phase      */
     false                           /* Don't disable all IRQs. */
 };

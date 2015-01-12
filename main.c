@@ -28,13 +28,12 @@
 #include "app_util_platform.h"
 
 #include "pca10001_board.h"
+#include "epd_test.h"
 
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 0                                           /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
 
 
 #define WAKEUP_BUTTON_PIN               BUTTON_0                                    /**< Button used to wake up the application. */
-#define USER_BUTTON_0_PIN               BUTTON_0 
-#define USER_BUTTON_1_PIN               BUTTON_1 
 
 #define ADVERTISING_LED_PIN_NO          LED_0                                       /**< LED to indicate advertising state. */
 #define CONNECTED_LED_PIN_NO            LED_1                                       /**< LED to indicate connected state. */
@@ -70,8 +69,7 @@
 
 #define APP_GPIOTE_MAX_USERS            3
 
-void epd_slide_show(void);
-void epd_clear_screen(void);
+
 
 static ble_gap_sec_params_t             m_sec_params;                               /**< Security requirements for this application. */
 static uint16_t                         m_conn_handle = BLE_CONN_HANDLE_INVALID;    /**< Handle of the current connection. */
@@ -79,10 +77,6 @@ static ble_nus_t                        m_nus;                                  
 
 static bool ble_buffer_available = true;
 static bool tx_complete = false;
-
-static bool user_button_0_pressed = false;
-static bool user_button_1_pressed = false;
-
 
 
 /**@brief     Error handler function, which is called when an error has occurred.
@@ -203,8 +197,8 @@ static void advertising_init(void)
 
 /**@brief    Function for handling the data from the Nordic UART Service.
  *
- * @details  This function will process the data received from the Nordic UART BLE Service and send
- *           it to the UART module.
+ * @details  This function will process the data received from the Nordic 
+ *           UART BLE Service and send it to the UART module.
  */
 /**@snippet [Handling the data received over BLE] */
 void nus_data_handler(ble_nus_t * p_nus, uint8_t * p_data, uint16_t length)
@@ -214,6 +208,9 @@ void nus_data_handler(ble_nus_t * p_nus, uint8_t * p_data, uint16_t length)
     }
     app_uart_put('\r');
     app_uart_put('\n');
+
+    /* Recognise EPD commands */
+    epd_commands(p_data, length);
 }
 /**@snippet [Handling the data received over BLE] */
 
@@ -250,8 +247,8 @@ static void sec_params_init(void)
 
 /**@brief       Function for handling an event from the Connection Parameters Module.
  *
- * @details     This function will be called for all events in the Connection Parameters Module
- *              which are passed to the application.
+ * @details     This function will be called for all events in the 
+ *              Connection Parameters Module which are passed to the application.
  *
  * @note        All this function does is to disconnect. This could have been done by simply setting
  *              the disconnect_on_fail config parameter, but instead we use the event handler
@@ -446,46 +443,14 @@ static void ble_stack_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
-/**@brief Function for handling button events.
- *
- * @param[in]   pin_no   The pin number of the button pressed.
- */
-static void button_event_handler(uint8_t pin_no, uint8_t button_action)
-{
-    if (button_action == APP_BUTTON_PUSH)
-    {
-        switch (pin_no)
-        {
-            case USER_BUTTON_0_PIN:
-                user_button_0_pressed = true;
-                break;
-
-            case USER_BUTTON_1_PIN:
-                user_button_1_pressed = true;
-                break;
-
-            default:
-                APP_ERROR_HANDLER(pin_no);
-                break;
-        }
-    }
-}
 
 /**@brief  Function for configuring the buttons.
  */
 static void buttons_init(void)
 {
-    static app_button_cfg_t buttons[] =
-    {
-        {USER_BUTTON_0_PIN, false, BUTTON_PULL, button_event_handler},
-        {USER_BUTTON_1_PIN, false, BUTTON_PULL, button_event_handler},
-    };
-    
-    APP_BUTTON_INIT(buttons, sizeof(buttons) / sizeof(buttons[0]), BUTTON_DETECTION_DELAY, false);
-
-    // Enable button events
-    uint32_t err_code = app_button_enable();
-    APP_ERROR_CHECK(err_code);
+    nrf_gpio_cfg_sense_input(WAKEUP_BUTTON_PIN,
+                             BUTTON_PULL, 
+                             NRF_GPIO_PIN_SENSE_LOW);
 }
 
 
@@ -592,7 +557,6 @@ int main(void)
     // Enter main loop
     for (;;) { 
 
-#if 1
         static uint8_t data_array[BLE_NUS_MAX_DATA_LEN];
         static uint8_t index = 0;
         uint8_t newbyte;
@@ -618,18 +582,8 @@ int main(void)
             if (ble_buffer_available) 
                 index = 0;
         }
-#endif
 
-        if (user_button_0_pressed) {
-            user_button_0_pressed = false;
-            puts("epd_clear");
-            epd_clear_screen();
-        }
-        if (user_button_1_pressed) {
-            user_button_1_pressed = false;
-            puts("epd_slide_show");
-            epd_slide_show();
-        }
+        epd_processs();
 
         power_manage();
     }

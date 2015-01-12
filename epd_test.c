@@ -1,6 +1,13 @@
+/*---------------------------------------------------------------------------*/
+/* Copyright (c) 2014 Robin Callender. All Rights Reserved.                  */
+/*---------------------------------------------------------------------------*/
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
+
+#include "ble_nus.h"
+#include "app_timer.h"
 
 #if EPD_COG_VERSION == 1
     #include "epd_v1.h"
@@ -10,7 +17,9 @@
     #error "unsupported COG version"
 #endif
 
-static bool epd_busy = false;
+static void (*function)(void);
+
+bool ble_attempt_to_send(uint8_t * data, uint8_t length);  // in main.c
 
 /* 
  * NOTE: All *.xbm files should have "const" in their image definition.
@@ -92,9 +101,6 @@ static bool epd_busy = false;
 /*---------------------------------------------------------------------------*/
 void epd_slide_show(void)
 {
-    if (epd_busy == true) return;
-    epd_busy = true;
-
     EPD_create(EPD_DISPLAY_SIZE);
 
     for (int i = 0; i < SIZE_OF_ARRAY(images_array); ++i) {
@@ -112,8 +118,6 @@ void epd_slide_show(void)
     }
 
     EPD_destroy();
-
-    epd_busy = false;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -121,14 +125,61 @@ void epd_slide_show(void)
 /*---------------------------------------------------------------------------*/
 void epd_clear_screen(void)
 {
-    if (epd_busy == true) return;
-    epd_busy = true;
-
     EPD_create(EPD_DISPLAY_SIZE);
     EPD_begin();
     EPD_clear();
     EPD_end();
     EPD_destroy();
+}
 
-    epd_busy = false;
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+static void send_cmd_response(char * stringz)
+{
+    int len = strlen(stringz);
+
+    if (len >= BLE_NUS_MAX_DATA_LEN)
+        return;  // FIXME needs an assert here
+
+    ble_attempt_to_send((uint8_t*)stringz, (uint8_t)len);
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+void epd_processs(void)      
+{
+    if (function != NULL) {
+        function();
+        function = NULL;
+        send_cmd_response("done\r\n");
+    }
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+void epd_commands(uint8_t * string, uint16_t length)
+{
+    if (function != NULL) {
+        send_cmd_response("busy...\r\n");
+        return;
+    }
+
+    do {
+
+        if (strnicmp((char*)string, "show", sizeof("show")-1) == 0) {
+            send_cmd_response("start slide show\r\n");
+            function = epd_slide_show;
+            break;
+        }
+
+        if (strnicmp((char*)string, "clear", sizeof("clear")-1) == 0) {
+            send_cmd_response("clear screen\r\n");
+            function = epd_clear_screen;
+            break;
+        }
+
+    } while (0);
 }
